@@ -1,0 +1,10 @@
+venv/
+**pycache**/
+*.pyc
+*.pkl
+.env
+mlruns/
+data/raw/
+data/processed/
+.DS_Store
+.vscode/
