@@ -51,6 +51,33 @@ def validate_numeric_columns(df: pd.DataFrame) -> None:
 
     if non_numeric:
         raise TypeError(f"These columns must be numeric: {non_numeric}")
+    
+
+def cast_integer_columns(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Casts count-based columns to integer type after cleaning.
+    """
+    df = df.copy()
+
+    int_cols = [
+        "NumberOfDependents",
+        "NumberOfOpenCreditLinesAndLoans",
+        "NumberRealEstateLoansOrLines",
+        "NumberOfTime30-59DaysPastDueNotWorse",
+        "NumberOfTimes90DaysLate",
+        "NumberOfTime60-89DaysPastDueNotWorse",
+        "TotalLatePayments",
+        "HasAnyLatePayment",
+        "age_was_invalid",
+        "MonthlyIncome_was_missing",
+        "NumberOfDependents_was_missing",
+    ]
+
+    for col in int_cols:
+        if col in df.columns:
+            df[col] = df[col].round().astype("int64")
+
+    return df
 
 
 def validate_no_missing_values(df: pd.DataFrame) -> None:
@@ -273,6 +300,8 @@ def preprocess_data(
     if encode_categoricals:
         df = encode_features(df)
 
+    df = cast_integer_columns(df)
+
     df = df.sort_index(axis=1)
 
     validate_no_missing_values(df)
@@ -344,3 +373,6 @@ if __name__ == "__main__":
 
     print("\nProcessed preview:")
     print(df_processed.head())
+
+    print(df_processed.dtypes)
+    print(df_processed[TARGET_COLUMN].value_counts(normalize=True))
